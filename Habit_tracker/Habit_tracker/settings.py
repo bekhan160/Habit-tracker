@@ -103,9 +103,13 @@ WSGI_APPLICATION = 'Habit_tracker.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+        'NAME': 'mydb',
+        'ENGINE': 'django.db.backends.postgresql',
+        'USER': 'postgres',
+        'PASSWORD': 'Bekhan2005',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
 }
 
 
