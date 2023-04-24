@@ -1,56 +1,60 @@
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.forms import UserCreationForm
-from django.shortcuts import render, redirect
-from django.views import View
-from rest_framework import permissions
-from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView
 
+from rest_framework.generics import ListAPIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import AllowAny
+from social_core.exceptions import AuthForbidden
+from social_django.utils import psa
 from users.models import User, Habit
 from users.serializers import UserSerializer, HabitSerializer
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 
-# @api_view(['GET', 'POST'])
 class UserApiView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        instance = User.create_from_post(data)
+        serializer = UserSerializer(instance)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class HabitApiView(ListAPIView):
     queryset = Habit.objects.all()
     serializer_class = HabitSerializer
 
+    def post(self, request, *args, **kwargs):
+        data = request.data
+        instance = Habit.create_from_post(data)
+        serializer = HabitSerializer(instance)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-# Django view а нам нужна DRF view
+class SocialLoginView(TokenObtainPairView):
+    permission_classes = [AllowAny]
 
-class Register(View):
+    def get_tokens_for_user(user):
+        access_token = AccessToken.for_user(user)
+        refresh_token = RefreshToken.for_user(user)
 
-    template_name = 'registration/register.html'
-
-    def get(self, request):
-        context = {
-            'form': UserCreationForm()
+        return {
+            'access': str(access_token),
+            'refresh': str(refresh_token),
         }
-        return render(request, self.template_name, context)
 
-    def post(self, request):
-        form = UserCreationForm(request.POST)
+    @psa('social:complete')
+    def post(self, request, backend):
+        try:
+            user = request.backend.do_auth(request.POST.get('access_token'))
+        except AuthForbidden as e:
+            return Response({'error': 'Не удалось авторизоваться через Google'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if form.is_valid():
-            form.save()
+        if user:
+            jwt_token = self.get_tokens_for_user(user)
+            return Response(jwt_token, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Не удалось авторизоваться через Google'}, status=status.HTTP_400_BAD_REQUEST)
 
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-
-            user = authenticate(username=username, password=password)
-            login(request, user)
-
-            return redirect('home')
-        elif not form.is_valid():
-            return UserCreationForm.error_messages
-
-        context = {
-            'form': form
-        }
-        return render(request, self.template_name, context)

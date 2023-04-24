@@ -19,6 +19,5 @@ import users.urls
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include('rest_framework.urls')),
     path('', include(users.urls))
 ]
