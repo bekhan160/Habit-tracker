@@ -5,37 +5,45 @@ from oauth2_provider.models import Application as OAuth2Application
 
 class Application(OAuth2Application):
     class Meta(OAuth2Application.Meta):
-        app_label = 'myapp'
-
-
-class User(AbstractUser):
-
-    @classmethod
-    def create_from_post(cls, data):
-        instance = cls(username=data['username'], password=data['password'], email=data['email'])
-        instance.save()
-        return instance
+        app_label = 'Habit tracker'
 
 
 class Habit(models.Model):
 
-    habit = models.CharField(max_length=30, unique=True)
+    habit_name = models.CharField(max_length=30, unique=True)
+    descriptions = models.CharField(max_length=60)
+    target = models.IntegerField()
+    frequency = models.IntegerField()
+    start_day = models.DateField(auto_now=True)
+    deadline = models.DateField()
 
     @classmethod
     def create_from_post(cls, data):
-        instance = cls(habit=data['habit'])
+        instance = cls(
+            habit_name=data['habit'],
+            descriptions=data['descriptions'],
+            target=data['target'],
+            frequency=data['frequency'],
+            deadline=data['deadline']
+        )
         instance.save()
         return instance
 
     def __str__(self):
-        return self.habit
+        return self.habit_name
 
 
-class UsersHabit(models.Model):
+class User(AbstractUser):
 
-    user = models.ForeignKey("User", on_delete=models.CASCADE)
-    habit = models.ForeignKey("Habit", on_delete=models.CASCADE)
+    habit_name = models.ManyToManyField(Habit, related_name='users')
 
+    @classmethod
+    def create_from_post(cls, data):
+
+        instance = cls(password=data['password'], email=data['email'])
+        instance.save()
+
+        return instance
 
 
 
