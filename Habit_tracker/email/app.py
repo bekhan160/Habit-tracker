@@ -43,5 +43,5 @@ def dayly_remember(username, email):
 
 
 
-#Approving_mail('Bekhan', 'bekhan@duck.com', 'url')
-dayly_remember('Bekhan', 'bekhan@duck.com')
+# Approving_mail('Bekhan', 'bekhan@duck.com', 'url')
+# dayly_remember('Bekhan', 'bekhan@duck.com')
