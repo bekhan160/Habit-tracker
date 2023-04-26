@@ -103,7 +103,7 @@ WSGI_APPLICATION = 'Habit_tracker.wsgi.application'
 
 DATABASES = {
     'default': {
-        'NAME': 'mydb',
+        'NAME': 'Habit_tracker',
         'ENGINE': 'django.db.backends.postgresql',
         'USER': 'postgres',
         'PASSWORD': 'Bekhan2005',
@@ -156,7 +156,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'users.User'
 
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/api/habit/'
 
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/api/login/'
 

@@ -19,28 +19,12 @@ class UserApiView(ListAPIView):
     serializer_class = UserSerializer
 
     def post(self, request, *args, **kwargs):
+
         data = request.data
+        User.auth_user(data=data)
         instance = User.create_from_post(data)
         serializer = UserSerializer(instance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    # def post(self, request):
-    #     username = request.data.get('username')
-    #     password = request.data.get('password')
-    #     email = request.data.get('email')
-    #     habit_name = request.data.get('habit')
-    #
-    #     user = User(username=username, password=password, email=email, )
-    #     user.save()
-    #
-    #     habit = Habit(habit=habit_name)
-    #     habit.save()
-    #
-    #     user.habit.add(habit)
-    #     user.save()
-    #
-    #     serializer = UserSerializer(user)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class HabitApiView(ListAPIView):
