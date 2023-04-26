@@ -11,8 +11,8 @@ def send_email(subject, body, recipient):
     body - текст письма
     recipient - адрес получателя
     """
-    sender = "habit.tracker@yandex.com"  # почта приложения Бекхана
-    password = "atzcmytorzngapay"  # пароль от почты приложения Бекхана
+    sender = "habit.tracker@yandex.com"  # адрес отправителя
+    password = "atzcmytorzngapay"  # пароль от почты отправителя
 
     message = MIMEMultipart()
     message['From'] = sender
@@ -42,5 +42,6 @@ def dayly_remember(username, email):
     send_email(subject, body, recipient)
 
 
-# Approving_mail('Bekhan', 'bekhan@duck.com', 'url')
-# dayly_remember('Bekhan', 'bekhan@duck.com')
+
+#Approving_mail('Bekhan', 'bekhan@duck.com', 'url')
+dayly_remember('Bekhan', 'bekhan@duck.com')
